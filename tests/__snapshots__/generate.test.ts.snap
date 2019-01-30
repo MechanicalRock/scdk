@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Given an AST representing the service catalog product When I run generate against the AST then it should produce the correct typescript source 1`] = `
+"import { CfnCloudFormationProvisionedProduct } from '@aws-cdk/aws-servicecatalog';
+import { Construct, Fn } from '@aws-cdk/cdk';
+
+export namespace MyProduct {
+    interface v1Props {
+        parameter_one?: string
+        parameter_two: string
+    }
+
+    type v1Outputs = 'output_one' | 'output_two';
+
+    export class v1 extends Construct {
+        private _provisionedProduct: CfnCloudFormationProvisionedProduct
+
+        /** Output returns an appropriate exported stack value for the given key **/
+        public Output: { readonly [key in v1Outputs ]: string}
+
+        /** Create a v1 MyProduct component */
+        constructor(scope: Construct, id: string, props?: v1Props) {
+            super(scope, id)
+    
+            const provisioningParameters = !props ? 
+                [] : Object.keys(props).map(key => ({[key]: key, value: props[key]}))
+    
+            this._provisionedProduct = new CfnCloudFormationProvisionedProduct(scope, id, {
+                productId: 'prod-xyz',
+                provisioningArtifactName: 'v1',
+                provisioningParameters
+            })
+
+            this.Output = {
+                output_one: this.export('output_one')
+                ,output_two: this.export('output_two')
+            }
+        }
+    
+        private export(value: v1Outputs) {
+            const attr = this._provisionedProduct.getAtt('CloudformationStackArn')
+            return Fn.importValue(Fn.sub('\${provisionedProductStackArn}/\${exportedValue}', {
+                'provisionedProductStackArn' : attr.toString(),
+                'exportedValue': value
+            }))
+        }
+    }
+}
+"
+`;

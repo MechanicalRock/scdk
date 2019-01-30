@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Given that I am authenticated to an account with a portfolio When I issue "scdk describe product" and it includes no additional parameters Then it should return all products that are in the portfolio 1`] = `
+" name:         product_one              
+ version:      v1                       
+ description:  Version 1 of product one 
+ product id:   prod_1                   
+ version id:   pa-01                    
+[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m      name      [90m [39m                 description                 [90m [39m default [90m [39m
+[90m ----------------[39m[90m ---------------------------------------------[39m[90m --------- [39m[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m Something      [90m [39m This is a parameter                         [90m [39m default [90m [39m
+[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m Something Else [90m [39m other parameter                             [90m [39m 1       [90m [39m
+[90m                 [39m[90m                                              [39m[90m           [39m"
+`;
+
+exports[`Given that I am authenticated to an account with a portfolio When I issue "scdk describe product" and it includes no additional parameters Then it should return all products that are in the portfolio 2`] = `
+" name:         product_one              
+ version:      v2                       
+ description:  Version 2 of product one 
+ product id:   prod_1                   
+ version id:   pa-01                    
+[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m      name      [90m [39m                 description                 [90m [39m default [90m [39m
+[90m ----------------[39m[90m ---------------------------------------------[39m[90m --------- [39m[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m Something      [90m [39m This is a parameter                         [90m [39m default [90m [39m
+[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m Something Else [90m [39m other parameter                             [90m [39m 1       [90m [39m
+[90m                 [39m[90m                                              [39m[90m           [39m"
+`;
+
+exports[`Given that I am authenticated to an account with a portfolio When I issue "scdk describe product" and it includes no additional parameters Then it should return all products that are in the portfolio 3`] = `
+" name:         product_two              
+ version:      v1                       
+ description:  Version 1 of product two 
+ product id:   prod_2                   
+ version id:   pa-01                    
+[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m      name      [90m [39m                 description                 [90m [39m default [90m [39m
+[90m ----------------[39m[90m ---------------------------------------------[39m[90m --------- [39m[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m Something      [90m [39m This is a parameter                         [90m [39m default [90m [39m
+[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m Something Else [90m [39m other parameter                             [90m [39m 1       [90m [39m
+[90m                 [39m[90m                                              [39m[90m           [39m"
+`;
+
+exports[`Given that I am authenticated to an account with a portfolio When I issue "scdk describe product" and it includes no additional parameters Then it should return all products that are in the portfolio 4`] = `
+" name:         product_two              
+ version:      v2                       
+ description:  Version 2 of product two 
+ product id:   prod_2                   
+ version id:   pa-01                    
+[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m      name      [90m [39m                 description                 [90m [39m default [90m [39m
+[90m ----------------[39m[90m ---------------------------------------------[39m[90m --------- [39m[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m Something      [90m [39m This is a parameter                         [90m [39m default [90m [39m
+[90m                 [39m[90m                                              [39m[90m           [39m
+[90m [39m Something Else [90m [39m other parameter                             [90m [39m 1       [90m [39m
+[90m                 [39m[90m                                              [39m[90m           [39m"
+`;

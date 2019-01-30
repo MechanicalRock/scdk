@@ -1,0 +1,50 @@
+import { CfnCloudFormationProvisionedProduct } from '@aws-cdk/aws-servicecatalog';
+import { Construct, Fn } from '@aws-cdk/cdk';
+
+export namespace {{ name }} {
+    interface {{ version }}Props {
+    {%- for p in parameters %}
+        {{ p.name }}{% if p.default %}?{% endif %}: string
+    {%- endfor %}
+    }
+
+    type {{ version }}Outputs =
+    {%- set comma = joiner("| ") %}
+    {%- for o in outputs %} {{ comma() }}'{{ o.name }}' {%- endfor %};
+
+    export class {{ version }} extends Construct {
+        private _provisionedProduct: CfnCloudFormationProvisionedProduct
+
+        /** Output returns an appropriate exported stack value for the given key **/
+        public Output: { readonly [key in {{ version }}Outputs ]: string}
+
+        /** Create a {{ version }} {{ name }} component */
+        constructor(scope: Construct, id: string, props?: {{ version }}Props) {
+            super(scope, id)
+    
+            const provisioningParameters = !props ? 
+                [] : Object.keys(props).map(key => ({[key]: key, value: props[key]}))
+    
+            this._provisionedProduct = new CfnCloudFormationProvisionedProduct(scope, id, {
+                productId: '{{ productId }}',
+                provisioningArtifactName: '{{ version }}',
+                provisioningParameters
+            })
+
+            this.Output = {
+                {%- set comma = joiner(",") %}
+                {%- for o in outputs %}
+                {{ comma() }}{{ o.name }}: this.export('{{ o.name }}')
+                {%- endfor %}
+            }
+        }
+    
+        private export(value: {{ version }}Outputs) {
+            const attr = this._provisionedProduct.getAtt('CloudformationStackArn')
+            return Fn.importValue(Fn.sub('${provisionedProductStackArn}/${exportedValue}', {
+                'provisionedProductStackArn' : attr.toString(),
+                'exportedValue': value
+            }))
+        }
+    }
+}

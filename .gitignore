@@ -1,0 +1,5 @@
+node_modules/
+.cover/
+.dist/
+.DS_Store
+.vscode/settings.json
