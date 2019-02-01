@@ -30,10 +30,9 @@ describe('Given an AST representing the service catalog product', () => {
 
     describe('When I run generate against the AST', () => {
         const templateDir = join(__dirname, '../src/lib/templates')
-        console.log(templateDir)
         const renderer = nunjucks.configure(templateDir, {})
         const cdkProductRenderer = new CdkProductRenderer(renderer)
-        const source = cdkProductRenderer.generate('cdk-product.ts.njk', input[0])
+        const source = cdkProductRenderer.generate('cdk-product.ts.njk', { products: input })
 
         it('then it should produce the correct typescript source', () => {
             expect(source).toMatchSnapshot()

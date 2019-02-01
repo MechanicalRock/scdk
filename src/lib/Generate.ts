@@ -1,14 +1,9 @@
-
-// nunjucks.configure('.', {})
-
-// const source = nunjucks.render('something.ts.njk', test) 
-
-interface ProductAst {
+export interface ProductAst {
     name: string
     productId: string
     version: string
     parameters: ProductParameter[]
-    outputs: ProductOutput[]
+    outputs?: ProductOutput[]
 }
 
 interface ProductParameter {
@@ -21,13 +16,13 @@ interface ProductOutput {
 }
 
 interface Renderer {
-    render(template: string, product: ProductAst): string
+    render(template: string, obj: { products: ProductAst[]}): string
 }
 
 export class CdkProductRenderer {
     constructor(private renderer: Renderer) {}
 
-    generate(template: string, product: ProductAst): string {
-        return this.renderer.render(template, product)
+    generate(template: string, obj: { products: ProductAst[] }): string {
+        return this.renderer.render(template, obj)
     }
 }

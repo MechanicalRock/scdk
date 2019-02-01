@@ -30,14 +30,13 @@ export namespace MyProduct {
                 provisioningArtifactName: 'v1',
                 provisioningParameters
             })
-
             this.Output = {
-                output_one: this.export('output_one')
-                ,output_two: this.export('output_two')
+                output_one: this.Export('output_one')
+                ,output_two: this.Export('output_two')
             }
         }
     
-        private export(value: v1Outputs) {
+        public Export(value: v1Outputs) {
             const attr = this._provisionedProduct.getAtt('CloudformationStackArn')
             return Fn.importValue(Fn.sub('\${provisionedProductStackArn}/\${exportedValue}', {
                 'provisionedProductStackArn' : attr.toString(),

@@ -1,45 +1,50 @@
 import { CfnCloudFormationProvisionedProduct } from '@aws-cdk/aws-servicecatalog';
 import { Construct, Fn } from '@aws-cdk/cdk';
 
-export namespace {{ name }} {
-    interface {{ version }}Props {
-    {%- for p in parameters %}
+{%- for product in products %}
+export namespace {{ product.name }} {
+    interface {{ product.version | replace(".", "_") }}Props {
+    {%- for p in product.parameters %}
         {{ p.name }}{% if p.default %}?{% endif %}: string
     {%- endfor %}
     }
 
-    type {{ version }}Outputs =
+    type {{ product.version | replace(".", "_") }}Outputs = 
+    {%- if product.outputs %}
     {%- set comma = joiner("| ") %}
-    {%- for o in outputs %} {{ comma() }}'{{ o.name }}' {%- endfor %};
+    {%- for o in product.outputs %} {{ comma() }}'{{ o.name }}' {%- endfor %};
+    {%- else %} string {%- endif %}
 
-    export class {{ version }} extends Construct {
+    export class {{ product.version | replace(".", "_") }} extends Construct {
         private _provisionedProduct: CfnCloudFormationProvisionedProduct
 
         /** Output returns an appropriate exported stack value for the given key **/
-        public Output: { readonly [key in {{ version }}Outputs ]: string}
+        public Output: { readonly [key in {{ product.version | replace(".", "_") }}Outputs ]: string}
 
-        /** Create a {{ version }} {{ name }} component */
-        constructor(scope: Construct, id: string, props?: {{ version }}Props) {
+        /** Create a {{ product.version }} {{ product.name }} component */
+        constructor(scope: Construct, id: string, props?: {{ product.version | replace(".", "_") }}Props) {
             super(scope, id)
     
             const provisioningParameters = !props ? 
                 [] : Object.keys(props).map(key => ({[key]: key, value: props[key]}))
     
             this._provisionedProduct = new CfnCloudFormationProvisionedProduct(scope, id, {
-                productId: '{{ productId }}',
-                provisioningArtifactName: '{{ version }}',
+                productId: '{{ product.productId }}',
+                provisioningArtifactName: '{{ product.version }}',
                 provisioningParameters
             })
-
+            
+            {%- if product.outputs %}
             this.Output = {
                 {%- set comma = joiner(",") %}
-                {%- for o in outputs %}
-                {{ comma() }}{{ o.name }}: this.export('{{ o.name }}')
+                {%- for o in product.outputs %}
+                {{ comma() }}{{ o.name }}: this.Export('{{ o.name }}')
                 {%- endfor %}
             }
+            {%- endif %}
         }
     
-        private export(value: {{ version }}Outputs) {
+        public Export(value: {{ product.version | replace(".", "_") }}Outputs) {
             const attr = this._provisionedProduct.getAtt('CloudformationStackArn')
             return Fn.importValue(Fn.sub('${provisionedProductStackArn}/${exportedValue}', {
                 'provisionedProductStackArn' : attr.toString(),
@@ -48,3 +53,4 @@ export namespace {{ name }} {
         }
     }
 }
+{%- endfor %}
