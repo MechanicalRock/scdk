@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-servicecatalog": "^0.22.0",
-    "@aws-cdk/cdk": "^0.22.0",
+    "@aws-cdk/cdk": "^0.35.0",
     "aws-sdk": "^2.372.0",
     "change-case": "^3.1.0",
     "cli-table3": "^0.5.1",
