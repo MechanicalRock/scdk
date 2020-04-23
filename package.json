@@ -30,7 +30,7 @@
     "nunjucks": "^3.1.7",
     "rxjs": "^6.3.3",
     "uuid": "^3.3.2",
-    "yargs": "^12.0.5"
+    "yargs": "^13.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
