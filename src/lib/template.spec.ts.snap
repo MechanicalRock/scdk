@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Given a portfolio definition When I render the template Then the rendered file should match the snapshot 1`] = `
+"export * as CloudPipeline from \\"./CloudPipeline\\";
+export * as CloudWebsite from \\"./CloudWebsite\\";
+"
+`;
+
+exports[`Given a portfolio definition When I render the template Then the rendered file should match the snapshot 2`] = `
+"import { Construct, Reference } from \\"@aws-cdk/core\\";
+import { CfnCloudFormationProvisionedProduct } from \\"@aws-cdk/aws-servicecatalog\\";
+interface v1Props {
+    input_one: string;
+    input_two?: string;
+}
+
+export class V1 extends Construct {
+    readonly output_one: Reference;
+
+    constructor(scope: Construct, id: string, props: v1Props) {
+        super(scope, id);
+
+        const provisioningParameters = Object.entries(props).map(([key, value]) => ({ key, value }));
+
+        const resource = new CfnCloudFormationProvisionedProduct(this, \\"Resource\\", {
+            productName: \\"cloud-pipeline\\",
+            provisioningArtifactName: \\"v1\\",
+            provisioningParameters,
+        });
+        this.output_one = resource.getAtt(\\"outputs.output_one\\");
+    }
+}
+"
+`;

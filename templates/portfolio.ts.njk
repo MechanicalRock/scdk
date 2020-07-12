@@ -1,0 +1,2 @@
+{%- for Product in Products %}export * as {{ pascalcase(Product.Name) }} from "./{{pascalcase(Product.Name)}}";
+{% endfor %}

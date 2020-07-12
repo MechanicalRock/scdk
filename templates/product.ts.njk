@@ -1,0 +1,35 @@
+import { Construct, Reference } from "@aws-cdk/core";
+import { CfnCloudFormationProvisionedProduct } from "@aws-cdk/aws-servicecatalog";
+
+{%- for Artifact in ProvisioningArtifacts %}
+{%- if Artifact.Parameters | length %}
+interface {{ Artifact.Name | replace(".", "_") }}Props {
+{%- for p in Artifact.Parameters %}
+    {{ p.ParameterName }}{% if not p.ParameterRequired %}?{% endif %}: string;
+{%- endfor %}
+}
+{%- endif %}
+
+export class {{ pascalcase(Artifact.Name) }} extends Construct {
+
+    {%- for Output in Artifact.Outputs %}
+    readonly {{ Output.OutputName }}: Reference;
+    {%- endfor %}
+
+    constructor(scope: Construct, id: string{% if Artifact.Parameters | length %}, props: {{ Artifact.Name | replace(".", "_") }}Props{% endif %}) {
+        super(scope, id);
+
+        const provisioningParameters = Object.entries(props).map(([key, value]) => ({ key, value }));
+
+        const resource = new CfnCloudFormationProvisionedProduct(this, "Resource", {
+            productName: "{{ Name }}",
+            provisioningArtifactName: "{{ Artifact.Name }}",
+            provisioningParameters,
+        });
+
+        {%- for Output in Artifact.Outputs %}
+        this.{{ Output.OutputName }} = resource.getAtt("outputs.{{ Output.OutputName }}");
+        {%- endfor %}
+    }
+}
+{%- endfor %}
