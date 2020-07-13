@@ -3,20 +3,30 @@ import { CfnCloudFormationProvisionedProduct } from "@aws-cdk/aws-servicecatalog
 
 {%- for Artifact in ProvisioningArtifacts %}
 {%- if Artifact.Parameters | length %}
-interface {{ Artifact.Name | replace(".", "_") }}Props {
+interface V{{ major(Artifact.Name) }}Props {
 {%- for p in Artifact.Parameters %}
+    {%- if p.ParameterDescription %}
+    /**
+     * {{ p.ParameterName }}: {{ p.ParameterDescription }}
+     */
+    {%- endif %}
     {{ p.ParameterName }}{% if not p.ParameterRequired %}?{% endif %}: string;
 {%- endfor %}
 }
 {%- endif %}
 
-export class {{ pascalcase(Artifact.Name) }} extends Construct {
+export class V{{ major(Artifact.Name) }} extends Construct {
 
-    {%- for Output in Artifact.Outputs %}
-    readonly {{ Output.OutputName }}: Reference;
+    {%- for o in Artifact.Outputs %}
+    {%- if o.OutputDescription %}
+    /**
+     * {{ o.OutputName }}: {{ o.OutputDescription }}
+     */
+    {%- endif %}
+    readonly {{ o.OutputName }}: Reference;
     {%- endfor %}
 
-    constructor(scope: Construct, id: string{% if Artifact.Parameters | length %}, props: {{ Artifact.Name | replace(".", "_") }}Props{% endif %}) {
+    constructor(scope: Construct, id: string{% if Artifact.Parameters | length %}, props: V{{ major(Artifact.Name) }}Props{% endif %}) {
         super(scope, id);
 
         const provisioningParameters = Object.entries(props).map(([key, value]) => ({ key, value }));
@@ -28,7 +38,7 @@ export class {{ pascalcase(Artifact.Name) }} extends Construct {
         });
 
         {%- for Output in Artifact.Outputs %}
-        this.{{ Output.OutputName }} = resource.getAtt("outputs.{{ Output.OutputName }}");
+        this.{{ Output.OutputName }} = resource.getAtt("Outputs.{{ Output.OutputName }}");
         {%- endfor %}
     }
 }

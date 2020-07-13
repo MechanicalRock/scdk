@@ -24,9 +24,9 @@ export class Catalog {
             ok(ProductViewDetails);
             for (const { ProductViewSummary } of ProductViewDetails) {
                 ok(ProductViewSummary?.Name);
-                ok(ProductViewSummary?.Id);
-                const { Name, Id } = ProductViewSummary;
-                const ProvisioningArtifacts = await all(this.listProvisioningArtifacts(Id));
+                ok(ProductViewSummary?.ProductId);
+                const { Name, ProductId } = ProductViewSummary;
+                const ProvisioningArtifacts = await all(this.listProvisioningArtifacts(ProductId));
                 yield { Name, ProvisioningArtifacts };
             }
             PageToken = NextPageToken;
@@ -37,42 +37,37 @@ export class Catalog {
         for (const Id of ProductIds) {
             const { ProductViewSummary } = await this.catalog.describeProduct({ Id }).promise();
             ok(ProductViewSummary?.Name);
-            const ProvisioningArtifacts = await all(this.listProvisioningArtifacts(Id));
+            ok(ProductViewSummary?.ProductId);
+            const { Name, ProductId } = ProductViewSummary;
+            const ProvisioningArtifacts = await all(this.listProvisioningArtifacts(ProductId));
             ok(ProvisioningArtifacts);
-            yield { Name: ProductViewSummary.Name, ProvisioningArtifacts };
+            yield { Name: Name, ProvisioningArtifacts };
         }
     }
 
     private async *listProvisioningArtifacts(ProductId: string): AsyncGenerator<ProvisioningArtifact, void, unknown> {
-        let PageToken;
-        do {
-            const { NextPageToken, ProvisioningArtifactDetails } = await this.catalog
-                .listProvisioningArtifacts({ ProductId })
+        const { ProvisioningArtifacts } = await this.catalog.describeProduct({ Id: ProductId }).promise();
+        ok(ProvisioningArtifacts);
+        for (const { Id: ProvisioningArtifactId, Name } of ProvisioningArtifacts) {
+            ok(Name);
+            ok(ProvisioningArtifactId);
+            const { Info } = await this.catalog
+                .describeProvisioningArtifact({ ProductId, ProvisioningArtifactId })
                 .promise();
-            ok(ProvisioningArtifactDetails);
-            for (const { Id: ProvisioningArtifactId, Name } of ProvisioningArtifactDetails) {
-                ok(Name);
-                ok(ProvisioningArtifactDetails);
-                const { Info } = await this.catalog
-                    .describeProvisioningArtifact({ ProductId, ProvisioningArtifactId })
-                    .promise();
-                ok(Info);
-                const { Parameters, Outputs } = await this.loadTemplateFromURL(Info.LoadTemplateFromURL);
-                yield { Name, Parameters, Outputs };
-            }
-            PageToken = NextPageToken;
-        } while (PageToken);
+            ok(Info?.TemplateUrl);
+            const { Parameters, Outputs } = await this.loadTemplateFromURL(Info.TemplateUrl);
+            yield { Name, Parameters, Outputs };
+        }
     }
 
     private async loadTemplateFromURL(url: string) {
-        const re = /^https:\/\/(?<Bucket>.+)\.s3[\.-](?<Region>.+)\.amazonaws\.com\/(?<Key>.+(json|yaml|yml))$/;
+        const re = /^https:\/\/(?<Bucket>.+)\.s3([\.-]?(?<Region>.+))?\.amazonaws\.com\/(?<Key>.+(json|yaml|yml))$/;
         const match = re.exec(url);
         const groups = match?.groups;
         ok(groups?.Bucket);
-        ok(groups?.Region);
         ok(groups?.Key);
-        const { Bucket, Key, Region } = groups;
-        this.s3.config.region = Region;
+        const { Bucket, Key } = groups;
+        this.s3.config.region = groups?.Region ?? this.s3.config.region;
         const { Body } = await this.s3.getObject({ Bucket, Key }).promise();
         ok(Body);
         const templateObject: Partial<Template> = Key.endsWith("json")
@@ -92,6 +87,7 @@ export class Catalog {
             ParameterName,
             ParameterType: Parameter.Type,
             ParameterRequired: Parameter.Default === undefined,
+            ParameterDescription: Parameter.Description,
         }));
     }
 
@@ -99,8 +95,9 @@ export class Catalog {
         if (!template?.Outputs) {
             return [];
         }
-        return Object.entries(template.Outputs).map(([OutputName]) => ({
+        return Object.entries(template.Outputs).map(([OutputName, Output]) => ({
             OutputName,
+            OutputDescription: Output.Description,
         }));
     }
 }

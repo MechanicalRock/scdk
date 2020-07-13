@@ -9,6 +9,7 @@ export type ProvisioningArtifact = {
     Parameters: ProvisioningArtifactParameter[];
     Outputs: {
         OutputName: string;
+        OutputDescription?: string;
     }[];
 };
 
@@ -16,6 +17,7 @@ export type ProvisioningArtifactParameter = {
     ParameterName: string;
     ParameterType: string;
     ParameterRequired: boolean;
+    ParameterDescription?: string;
 };
 
 export type Portfolio = {

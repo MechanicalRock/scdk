@@ -3,6 +3,7 @@ import pascalcase from "pascalcase";
 import { join } from "path";
 import { promises as fs, existsSync, mkdirSync } from "fs";
 import { Product, Portfolio } from "./model";
+import { major } from "semver";
 
 const njs = new Environment(new FileSystemLoader(join(__dirname, "../..", "templates")));
 
@@ -28,7 +29,7 @@ export function getTemplates(portfolio: Portfolio): { [key: string]: string } {
 }
 
 export const renderProduct = (product: Product): string => {
-    return njs.render("product.ts.njk", { ...product, pascalcase });
+    return njs.render("product.ts.njk", { ...product, pascalcase, major });
 };
 
 export const renderPortfolio = (portfolio: Portfolio): string => {
