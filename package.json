@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.10.2",
-    "aws-sdk": "^2.713.0",
+    "aws-sdk": "^2.814.0",
     "nunjucks": "^3.2.1",
     "pascalcase": "^0.1.1",
     "yargs": "^15.3.1"
